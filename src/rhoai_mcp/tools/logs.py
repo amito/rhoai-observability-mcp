@@ -1,4 +1,4 @@
-from rhoai_mcp.backends.loki import LokiBackend, Tenant
+from rhoai_mcp.backends.loki import LokiBackend
 
 
 def _format_log_response(data: dict) -> str:

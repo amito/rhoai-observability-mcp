@@ -81,9 +81,7 @@ def register_cluster_tools(openshift: OpenShiftBackend) -> dict:
             gpu_cap = capacity.get("nvidia.com/gpu", "0")
             gpu_alloc = allocatable.get("nvidia.com/gpu", "0")
             if gpu_cap != "0":
-                lines.append(
-                    f"- **GPU:** {gpu_alloc} available / {gpu_cap} total (nvidia.com/gpu)"
-                )
+                lines.append(f"- **GPU:** {gpu_alloc} available / {gpu_cap} total (nvidia.com/gpu)")
 
             lines.append(
                 f"- **CPU:** {allocatable.get('cpu', 'N/A')} available "
@@ -97,9 +95,7 @@ def register_cluster_tools(openshift: OpenShiftBackend) -> dict:
 
         return "\n".join(lines)
 
-    async def describe_resource(
-        resource_type: str, name: str, namespace: str
-    ) -> str:
+    async def describe_resource(resource_type: str, name: str, namespace: str) -> str:
         """Get detailed description of a Kubernetes resource.
 
         Args:

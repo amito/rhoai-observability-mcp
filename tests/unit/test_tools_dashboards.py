@@ -28,8 +28,18 @@ class TestDashboardTools:
             "dashboard": {
                 "title": "vLLM Metrics",
                 "panels": [
-                    {"id": 1, "title": "TTFT", "type": "graph", "targets": [{"expr": "vllm:time_to_first_token_seconds"}]},
-                    {"id": 2, "title": "Queue Depth", "type": "stat", "targets": [{"expr": "vllm:num_requests_waiting"}]},
+                    {
+                        "id": 1,
+                        "title": "TTFT",
+                        "type": "graph",
+                        "targets": [{"expr": "vllm:time_to_first_token_seconds"}],
+                    },
+                    {
+                        "id": 2,
+                        "title": "Queue Depth",
+                        "type": "stat",
+                        "targets": [{"expr": "vllm:num_requests_waiting"}],
+                    },
                 ],
             },
         }

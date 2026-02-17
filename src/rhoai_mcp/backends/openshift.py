@@ -91,14 +91,16 @@ class OpenShiftBackend:
             for event in events.items:
                 if reason and event.reason != reason:
                     continue
-                result.append({
-                    "reason": event.reason,
-                    "message": event.message,
-                    "type": event.type,
-                    "count": event.count,
-                    "object": f"{event.involved_object.kind}/{event.involved_object.name}",
-                    "timestamp": str(event.metadata.creation_timestamp),
-                })
+                result.append(
+                    {
+                        "reason": event.reason,
+                        "message": event.message,
+                        "type": event.type,
+                        "count": event.count,
+                        "object": f"{event.involved_object.kind}/{event.involved_object.name}",
+                        "timestamp": str(event.metadata.creation_timestamp),
+                    }
+                )
             return result
         except Exception as exc:
             logger.error("Failed to list events: %s", exc)
@@ -117,9 +119,7 @@ class OpenShiftBackend:
             return [
                 {
                     "name": node.metadata.name,
-                    "conditions": {
-                        c.type: c.status for c in (node.status.conditions or [])
-                    },
+                    "conditions": {c.type: c.status for c in (node.status.conditions or [])},
                     "capacity": dict(node.status.capacity or {}),
                     "allocatable": dict(node.status.allocatable or {}),
                 }
@@ -151,9 +151,7 @@ class OpenShiftBackend:
             logger.error("Failed to list InferenceServices: %s", exc)
             return []
 
-    def describe_resource(
-        self, resource_type: str, name: str, namespace: str
-    ) -> dict:
+    def describe_resource(self, resource_type: str, name: str, namespace: str) -> dict:
         """Get detailed info about a specific resource."""
         try:
             v1 = self._core_v1()

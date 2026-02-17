@@ -10,10 +10,13 @@ class TestGrafanaBackend:
     async def test_search_dashboards(self, settings, auth):
         """Should search for dashboards."""
         respx.get("https://grafana.test:3000/api/search").mock(
-            return_value=httpx.Response(200, json=[
-                {"uid": "abc123", "title": "vLLM Model Metrics", "tags": ["vllm"]},
-                {"uid": "def456", "title": "GPU Metrics", "tags": ["gpu"]},
-            ])
+            return_value=httpx.Response(
+                200,
+                json=[
+                    {"uid": "abc123", "title": "vLLM Model Metrics", "tags": ["vllm"]},
+                    {"uid": "def456", "title": "GPU Metrics", "tags": ["gpu"]},
+                ],
+            )
         )
 
         backend = GrafanaBackend(settings, auth)
@@ -38,14 +41,22 @@ class TestGrafanaBackend:
     async def test_get_dashboard(self, settings, auth):
         """Should fetch a dashboard by UID."""
         respx.get("https://grafana.test:3000/api/dashboards/uid/abc123").mock(
-            return_value=httpx.Response(200, json={
-                "dashboard": {
-                    "title": "vLLM Metrics",
-                    "panels": [
-                        {"id": 1, "title": "TTFT", "type": "graph", "targets": [{"expr": "vllm:time_to_first_token_seconds"}]},
-                    ],
+            return_value=httpx.Response(
+                200,
+                json={
+                    "dashboard": {
+                        "title": "vLLM Metrics",
+                        "panels": [
+                            {
+                                "id": 1,
+                                "title": "TTFT",
+                                "type": "graph",
+                                "targets": [{"expr": "vllm:time_to_first_token_seconds"}],
+                            },
+                        ],
+                    },
                 },
-            })
+            )
         )
 
         backend = GrafanaBackend(settings, auth)

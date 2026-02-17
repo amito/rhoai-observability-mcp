@@ -1,6 +1,6 @@
 # tests/unit/test_tools_metrics.py
 import pytest
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock
 from rhoai_mcp.tools.metrics import register_metrics_tools
 
 

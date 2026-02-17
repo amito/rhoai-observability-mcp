@@ -18,9 +18,7 @@ VLLM_METRICS = {
 def register_metrics_tools(prometheus: PrometheusBackend) -> dict:
     """Create metrics tool functions bound to the given backend."""
 
-    async def query_prometheus(
-        query: str, time: str | None = None
-    ) -> str:
+    async def query_prometheus(query: str, time: str | None = None) -> str:
         """Execute a raw PromQL query against ThanosQuerier.
 
         Args:
@@ -82,7 +80,11 @@ def register_metrics_tools(prometheus: PrometheusBackend) -> dict:
             filtered = all_metrics
 
         if not filtered:
-            return f"No metrics found matching filter: '{filter}'" if filter else "No metrics available"
+            return (
+                f"No metrics found matching filter: '{filter}'"
+                if filter
+                else "No metrics available"
+            )
 
         return "\n".join(sorted(filtered))
 

@@ -14,9 +14,7 @@ def register_investigation_tools(
 ) -> dict:
     """Create composite investigation tool functions."""
 
-    async def investigate_latency(
-        model_name: str, time_range: str = "15m"
-    ) -> str:
+    async def investigate_latency(model_name: str, time_range: str = "15m") -> str:
         """Investigate latency issues for a vLLM model by correlating metrics, logs, and alerts.
 
         Fetches TTFT, TPOT, E2E latency, queue depth, error logs, and related alerts
@@ -109,9 +107,7 @@ def register_investigation_tools(
 
         return "\n".join(lines)
 
-    async def investigate_gpu(
-        time_range: str = "15m", namespace: str | None = None
-    ) -> str:
+    async def investigate_gpu(time_range: str = "15m", namespace: str | None = None) -> str:
         """Investigate GPU utilization issues by correlating GPU metrics, KV cache, and pod status.
 
         Args:
@@ -163,8 +159,7 @@ def register_investigation_tools(
             if pods:
                 for pod in pods:
                     lines.append(
-                        f"- **{pod['name']}**: {pod['status']} "
-                        f"(restarts: {pod['restarts']})"
+                        f"- **{pod['name']}**: {pod['status']} (restarts: {pod['restarts']})"
                     )
             else:
                 lines.append("No pods found.")
@@ -183,10 +178,7 @@ def register_investigation_tools(
             if gpu_alerts:
                 for alert in gpu_alerts:
                     name = alert["labels"].get("alertname", "Unknown")
-                    lines.append(
-                        f"- **{name}**: "
-                        f"{alert.get('annotations', {}).get('summary', '')}"
-                    )
+                    lines.append(f"- **{name}**: {alert.get('annotations', {}).get('summary', '')}")
             else:
                 lines.append("No GPU-related alerts.")
         else:
@@ -194,9 +186,7 @@ def register_investigation_tools(
 
         return "\n".join(lines)
 
-    async def investigate_errors(
-        namespace: str, time_range: str = "30m"
-    ) -> str:
+    async def investigate_errors(namespace: str, time_range: str = "30m") -> str:
         """Investigate errors in a namespace by correlating logs, alerts, and pod events.
 
         Args:
@@ -210,9 +200,7 @@ def register_investigation_tools(
                 limit=50,
             ),
             alertmanager.get_alerts(filter_expr=f'namespace="{namespace}"'),
-            asyncio.get_event_loop().run_in_executor(
-                None, lambda: openshift.get_events(namespace)
-            ),
+            asyncio.get_event_loop().run_in_executor(None, lambda: openshift.get_events(namespace)),
             return_exceptions=True,
         )
 
@@ -226,9 +214,7 @@ def register_investigation_tools(
             results = error_logs["data"].get("result", [])
             if results:
                 for stream in results[:10]:
-                    pod = stream.get("stream", {}).get(
-                        "kubernetes_pod_name", "unknown"
-                    )
+                    pod = stream.get("stream", {}).get("kubernetes_pod_name", "unknown")
                     lines.append(f"### Pod: {pod}")
                     for ts, msg in stream.get("values", [])[:5]:
                         lines.append(f"  - {msg}")

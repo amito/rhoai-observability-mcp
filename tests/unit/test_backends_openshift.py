@@ -1,7 +1,6 @@
 # tests/unit/test_backends_openshift.py
-import pytest
 from datetime import datetime, timezone
-from unittest.mock import MagicMock, patch, AsyncMock
+from unittest.mock import MagicMock, patch
 from rhoai_mcp.backends.openshift import OpenShiftBackend
 
 

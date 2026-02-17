@@ -37,7 +37,7 @@ class TestLogTools:
     async def test_get_pod_logs(self):
         """Should build LogQL from pod name and namespace."""
         self.loki.query_range.return_value = SAMPLE_LOG_RESPONSE
-        result = await self.tools["get_pod_logs"](namespace="vllm", pod_name="vllm-0")
+        await self.tools["get_pod_logs"](namespace="vllm", pod_name="vllm-0")
         call_args = self.loki.query_range.call_args
         logql = call_args[0][0] if call_args[0] else call_args[1]["logql"]
         assert "vllm-0" in logql

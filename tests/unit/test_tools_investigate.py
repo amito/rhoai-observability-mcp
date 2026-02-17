@@ -43,7 +43,13 @@ class TestInvestigationTools:
             "data": {"result": [{"metric": {}, "value": [1, "0.95"]}]},
         }
         self.openshift.get_pods.return_value = [
-            {"name": "vllm-0", "namespace": "vllm", "status": "Running", "restarts": 0, "created": "2024-01-01"},
+            {
+                "name": "vllm-0",
+                "namespace": "vllm",
+                "status": "Running",
+                "restarts": 0,
+                "created": "2024-01-01",
+            },
         ]
         self.alertmanager.get_alerts.return_value = []
 
@@ -55,15 +61,31 @@ class TestInvestigationTools:
         """Should correlate error logs, alerts, and pod restarts."""
         self.loki.query_range.return_value = {
             "status": "success",
-            "data": {"result": [
-                {"stream": {"kubernetes_pod_name": "vllm-0"}, "values": [["1", "ERROR: OOM killed"]]}
-            ]},
+            "data": {
+                "result": [
+                    {
+                        "stream": {"kubernetes_pod_name": "vllm-0"},
+                        "values": [["1", "ERROR: OOM killed"]],
+                    }
+                ]
+            },
         }
         self.alertmanager.get_alerts.return_value = [
-            {"labels": {"alertname": "KubePodCrashLooping", "severity": "warning"}, "annotations": {"summary": "Pod crash looping"}, "status": {"state": "active"}},
+            {
+                "labels": {"alertname": "KubePodCrashLooping", "severity": "warning"},
+                "annotations": {"summary": "Pod crash looping"},
+                "status": {"state": "active"},
+            },
         ]
         self.openshift.get_events.return_value = [
-            {"reason": "BackOff", "message": "Back-off restarting", "type": "Warning", "count": 5, "object": "Pod/vllm-0", "timestamp": "2024-01-01"},
+            {
+                "reason": "BackOff",
+                "message": "Back-off restarting",
+                "type": "Warning",
+                "count": 5,
+                "object": "Pod/vllm-0",
+                "timestamp": "2024-01-01",
+            },
         ]
 
         result = await self.tools["investigate_errors"](namespace="vllm")

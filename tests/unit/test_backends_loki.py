@@ -26,9 +26,9 @@ class TestLokiBackend:
     @pytest.mark.asyncio
     async def test_query_range(self, settings, auth):
         """Should execute a LogQL range query."""
-        respx.get(
-            "https://loki.test:8080/api/logs/v1/application/loki/api/v1/query_range"
-        ).mock(return_value=httpx.Response(200, json=SAMPLE_LOG_RESPONSE))
+        respx.get("https://loki.test:8080/api/logs/v1/application/loki/api/v1/query_range").mock(
+            return_value=httpx.Response(200, json=SAMPLE_LOG_RESPONSE)
+        )
 
         backend = LokiBackend(settings, auth)
         result = await backend.query_range(
@@ -71,12 +71,15 @@ class TestLokiBackend:
     @pytest.mark.asyncio
     async def test_get_labels(self, settings, auth):
         """Should list available labels."""
-        respx.get(
-            "https://loki.test:8080/api/logs/v1/application/loki/api/v1/labels"
-        ).mock(return_value=httpx.Response(200, json={
-            "status": "success",
-            "data": ["kubernetes_namespace_name", "kubernetes_pod_name", "level"],
-        }))
+        respx.get("https://loki.test:8080/api/logs/v1/application/loki/api/v1/labels").mock(
+            return_value=httpx.Response(
+                200,
+                json={
+                    "status": "success",
+                    "data": ["kubernetes_namespace_name", "kubernetes_pod_name", "level"],
+                },
+            )
+        )
 
         backend = LokiBackend(settings, auth)
         result = await backend.get_labels(tenant="application")
@@ -86,9 +89,9 @@ class TestLokiBackend:
     @pytest.mark.asyncio
     async def test_connection_error(self, settings, auth):
         """Should return error dict on connection failure."""
-        respx.get(
-            "https://loki.test:8080/api/logs/v1/application/loki/api/v1/query_range"
-        ).mock(side_effect=httpx.ConnectError("Connection refused"))
+        respx.get("https://loki.test:8080/api/logs/v1/application/loki/api/v1/query_range").mock(
+            side_effect=httpx.ConnectError("Connection refused")
+        )
 
         backend = LokiBackend(settings, auth)
         result = await backend.query_range('{job="test"}', tenant="application")

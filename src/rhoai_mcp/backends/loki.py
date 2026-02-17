@@ -48,9 +48,7 @@ class LokiBackend:
 
         try:
             async with self._client() as client:
-                resp = await client.get(
-                    f"{self._tenant_path(tenant)}/query_range", params=params
-                )
+                resp = await client.get(f"{self._tenant_path(tenant)}/query_range", params=params)
                 resp.raise_for_status()
                 return resp.json()
         except (httpx.HTTPError, httpx.ConnectError) as exc:

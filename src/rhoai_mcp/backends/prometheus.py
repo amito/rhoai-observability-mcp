@@ -38,9 +38,7 @@ class PrometheusBackend:
             logger.error("Prometheus query failed: %s", exc)
             return {"status": "error", "error": str(exc), "errorType": "connection"}
 
-    async def query_range(
-        self, promql: str, start: str, end: str, step: str = "60s"
-    ) -> dict:
+    async def query_range(self, promql: str, start: str, end: str, step: str = "60s") -> dict:
         """Execute a range PromQL query."""
         params = {"query": promql, "start": start, "end": end, "step": step}
         try:

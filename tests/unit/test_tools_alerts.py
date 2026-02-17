@@ -1,5 +1,4 @@
 # tests/unit/test_tools_alerts.py
-import json
 import pytest
 from unittest.mock import AsyncMock
 from rhoai_mcp.tools.alerts import register_alert_tools

@@ -43,7 +43,7 @@ class TestAlertmanagerBackend:
         )
 
         backend = AlertmanagerBackend(settings, auth)
-        result = await backend.get_alerts(severity="critical")
+        await backend.get_alerts(severity="critical")
         assert "severity" in str(route.calls[0].request.url)
 
     @respx.mock
@@ -51,9 +51,9 @@ class TestAlertmanagerBackend:
     async def test_get_alert_groups(self, settings, auth):
         """Should fetch alert groups."""
         respx.get("https://alertmanager.test:9093/api/v2/alerts/groups").mock(
-            return_value=httpx.Response(200, json=[
-                {"labels": {"namespace": "vllm"}, "alerts": SAMPLE_ALERTS}
-            ])
+            return_value=httpx.Response(
+                200, json=[{"labels": {"namespace": "vllm"}, "alerts": SAMPLE_ALERTS}]
+            )
         )
 
         backend = AlertmanagerBackend(settings, auth)

@@ -4,9 +4,7 @@ from rhoai_mcp.backends.grafana import GrafanaBackend
 def register_dashboard_tools(grafana: GrafanaBackend) -> dict:
     """Create dashboard tool functions bound to the given backend."""
 
-    async def list_dashboards(
-        tag: str | None = None, search: str | None = None
-    ) -> str:
+    async def list_dashboards(tag: str | None = None, search: str | None = None) -> str:
         """List available Grafana dashboards.
 
         Args:
