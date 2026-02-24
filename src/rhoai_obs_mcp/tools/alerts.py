@@ -1,6 +1,6 @@
 import json
 
-from rhoai_mcp.backends.alertmanager import AlertmanagerBackend
+from rhoai_obs_mcp.backends.alertmanager import AlertmanagerBackend
 
 
 def register_alert_tools(alertmanager: AlertmanagerBackend) -> dict:

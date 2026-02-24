@@ -104,7 +104,7 @@ Startup validates connectivity to each backend and logs availability.
 rhoai-observability-mcp/
 ├── pyproject.toml
 ├── src/
-│   └── rhoai_mcp/
+│   └── rhoai_obs_mcp/
 │       ├── __init__.py
 │       ├── server.py              # FastMCP server, tool registration
 │       ├── config.py              # Pydantic BaseSettings, auto-detection

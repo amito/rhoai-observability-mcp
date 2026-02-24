@@ -1,7 +1,7 @@
 # tests/unit/test_tools_investigate.py
 import pytest
 from unittest.mock import AsyncMock, MagicMock
-from rhoai_mcp.tools.investigate import register_investigation_tools
+from rhoai_obs_mcp.tools.investigate import register_investigation_tools
 
 
 class TestInvestigationTools:

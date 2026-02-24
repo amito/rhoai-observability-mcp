@@ -1,4 +1,4 @@
-from rhoai_mcp.config import Settings
+from rhoai_obs_mcp.config import Settings
 
 
 class TestSettings:

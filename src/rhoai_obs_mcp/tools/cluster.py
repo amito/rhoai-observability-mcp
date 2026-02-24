@@ -1,6 +1,6 @@
 import json
 
-from rhoai_mcp.backends.openshift import OpenShiftBackend
+from rhoai_obs_mcp.backends.openshift import OpenShiftBackend
 
 
 def register_cluster_tools(openshift: OpenShiftBackend) -> dict:

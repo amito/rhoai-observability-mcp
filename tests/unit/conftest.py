@@ -1,6 +1,6 @@
 import pytest
-from rhoai_mcp.config import Settings
-from rhoai_mcp.auth import AuthProvider
+from rhoai_obs_mcp.config import Settings
+from rhoai_obs_mcp.auth import AuthProvider
 
 
 @pytest.fixture

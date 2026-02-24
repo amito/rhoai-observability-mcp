@@ -1,7 +1,7 @@
 import httpx
 import pytest
 import respx
-from rhoai_mcp.backends.prometheus import PrometheusBackend
+from rhoai_obs_mcp.backends.prometheus import PrometheusBackend
 
 
 class TestPrometheusBackend:

@@ -1,7 +1,7 @@
 import json
 import re
 
-from rhoai_mcp.backends.prometheus import PrometheusBackend
+from rhoai_obs_mcp.backends.prometheus import PrometheusBackend
 
 # Key vLLM metrics with human-readable descriptions
 VLLM_METRICS = {

@@ -1,7 +1,7 @@
 # tests/unit/test_tools_dashboards.py
 import pytest
 from unittest.mock import AsyncMock
-from rhoai_mcp.tools.dashboards import register_dashboard_tools
+from rhoai_obs_mcp.tools.dashboards import register_dashboard_tools
 
 
 class TestDashboardTools:

@@ -1,7 +1,7 @@
 import httpx
 import pytest
 import respx
-from rhoai_mcp.backends.grafana import GrafanaBackend
+from rhoai_obs_mcp.backends.grafana import GrafanaBackend
 
 
 class TestGrafanaBackend:

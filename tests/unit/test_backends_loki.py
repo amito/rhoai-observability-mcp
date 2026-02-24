@@ -1,7 +1,7 @@
 import httpx
 import pytest
 import respx
-from rhoai_mcp.backends.loki import LokiBackend
+from rhoai_obs_mcp.backends.loki import LokiBackend
 
 
 SAMPLE_LOG_RESPONSE = {

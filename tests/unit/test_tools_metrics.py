@@ -1,7 +1,7 @@
 # tests/unit/test_tools_metrics.py
 import pytest
 from unittest.mock import AsyncMock
-from rhoai_mcp.tools.metrics import register_metrics_tools
+from rhoai_obs_mcp.tools.metrics import register_metrics_tools
 
 
 class TestMetricsTools:

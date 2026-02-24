@@ -1,7 +1,7 @@
 # tests/unit/test_backends_openshift.py
 from datetime import datetime, timezone
 from unittest.mock import MagicMock, patch
-from rhoai_mcp.backends.openshift import OpenShiftBackend
+from rhoai_obs_mcp.backends.openshift import OpenShiftBackend
 
 
 def _make_pod(name, namespace, phase="Running", restarts=0):
@@ -33,8 +33,8 @@ def _make_event(reason, message, namespace="vllm"):
 
 
 class TestOpenShiftBackend:
-    @patch("rhoai_mcp.backends.openshift.config")
-    @patch("rhoai_mcp.backends.openshift.client")
+    @patch("rhoai_obs_mcp.backends.openshift.config")
+    @patch("rhoai_obs_mcp.backends.openshift.client")
     def test_get_pods(self, mock_client, mock_config, settings, auth):
         """Should list pods in a namespace."""
         mock_v1 = MagicMock()
@@ -50,8 +50,8 @@ class TestOpenShiftBackend:
         assert result[0]["name"] == "vllm-0"
         assert result[0]["status"] == "Running"
 
-    @patch("rhoai_mcp.backends.openshift.config")
-    @patch("rhoai_mcp.backends.openshift.client")
+    @patch("rhoai_obs_mcp.backends.openshift.config")
+    @patch("rhoai_obs_mcp.backends.openshift.client")
     def test_get_events(self, mock_client, mock_config, settings, auth):
         """Should list events in a namespace."""
         mock_v1 = MagicMock()
@@ -66,8 +66,8 @@ class TestOpenShiftBackend:
         assert len(result) == 1
         assert result[0]["reason"] == "BackOff"
 
-    @patch("rhoai_mcp.backends.openshift.config")
-    @patch("rhoai_mcp.backends.openshift.client")
+    @patch("rhoai_obs_mcp.backends.openshift.config")
+    @patch("rhoai_obs_mcp.backends.openshift.client")
     def test_get_nodes(self, mock_client, mock_config, settings, auth):
         """Should list node status."""
         mock_v1 = MagicMock()

@@ -1,4 +1,4 @@
-from rhoai_mcp.backends.grafana import GrafanaBackend
+from rhoai_obs_mcp.backends.grafana import GrafanaBackend
 
 
 def register_dashboard_tools(grafana: GrafanaBackend) -> dict:

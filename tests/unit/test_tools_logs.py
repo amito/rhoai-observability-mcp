@@ -1,7 +1,7 @@
 # tests/unit/test_tools_logs.py
 import pytest
 from unittest.mock import AsyncMock
-from rhoai_mcp.tools.logs import register_log_tools
+from rhoai_obs_mcp.tools.logs import register_log_tools
 
 
 SAMPLE_LOG_RESPONSE = {

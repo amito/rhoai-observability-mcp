@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
-from rhoai_mcp.auth import AuthProvider
-from rhoai_mcp.config import Settings
+from rhoai_obs_mcp.auth import AuthProvider
+from rhoai_obs_mcp.config import Settings
 
 
 class TestAuthProvider:
@@ -18,7 +18,7 @@ class TestAuthProvider:
         headers = auth.get_headers()
         assert headers["Authorization"] == "Bearer my-token"
 
-    @patch("rhoai_mcp.auth._read_sa_token")
+    @patch("rhoai_obs_mcp.auth._read_sa_token")
     def test_in_cluster_token(self, mock_read):
         """Should read SA token when in-cluster and no explicit token."""
         mock_read.return_value = "sa-token-456"
@@ -29,7 +29,7 @@ class TestAuthProvider:
             auth = AuthProvider(settings)
             assert auth.get_token() == "sa-token-456"
 
-    @patch("rhoai_mcp.auth._get_kubeconfig_token")
+    @patch("rhoai_obs_mcp.auth._get_kubeconfig_token")
     def test_external_token(self, mock_kube):
         """Should use kubeconfig token when external and no explicit token."""
         mock_kube.return_value = "kube-token-789"
@@ -40,6 +40,6 @@ class TestAuthProvider:
     def test_no_token_available(self):
         """Should return None when no auth source is available."""
         settings = Settings(_env_file=None)
-        with patch("rhoai_mcp.auth._get_kubeconfig_token", return_value=None):
+        with patch("rhoai_obs_mcp.auth._get_kubeconfig_token", return_value=None):
             auth = AuthProvider(settings)
             assert auth.get_token() is None

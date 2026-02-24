@@ -2,19 +2,19 @@ import logging
 
 from mcp.server.fastmcp import FastMCP
 
-from rhoai_mcp.auth import AuthProvider
-from rhoai_mcp.backends.alertmanager import AlertmanagerBackend
-from rhoai_mcp.backends.grafana import GrafanaBackend
-from rhoai_mcp.backends.loki import LokiBackend
-from rhoai_mcp.backends.openshift import OpenShiftBackend
-from rhoai_mcp.backends.prometheus import PrometheusBackend
-from rhoai_mcp.config import Settings
-from rhoai_mcp.tools.alerts import register_alert_tools
-from rhoai_mcp.tools.cluster import register_cluster_tools
-from rhoai_mcp.tools.dashboards import register_dashboard_tools
-from rhoai_mcp.tools.investigate import register_investigation_tools
-from rhoai_mcp.tools.logs import register_log_tools
-from rhoai_mcp.tools.metrics import register_metrics_tools
+from rhoai_obs_mcp.auth import AuthProvider
+from rhoai_obs_mcp.backends.alertmanager import AlertmanagerBackend
+from rhoai_obs_mcp.backends.grafana import GrafanaBackend
+from rhoai_obs_mcp.backends.loki import LokiBackend
+from rhoai_obs_mcp.backends.openshift import OpenShiftBackend
+from rhoai_obs_mcp.backends.prometheus import PrometheusBackend
+from rhoai_obs_mcp.config import Settings
+from rhoai_obs_mcp.tools.alerts import register_alert_tools
+from rhoai_obs_mcp.tools.cluster import register_cluster_tools
+from rhoai_obs_mcp.tools.dashboards import register_dashboard_tools
+from rhoai_obs_mcp.tools.investigate import register_investigation_tools
+from rhoai_obs_mcp.tools.logs import register_log_tools
+from rhoai_obs_mcp.tools.metrics import register_metrics_tools
 
 logger = logging.getLogger(__name__)
 

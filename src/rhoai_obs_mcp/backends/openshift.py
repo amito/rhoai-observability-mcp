@@ -1,10 +1,10 @@
-# src/rhoai_mcp/backends/openshift.py
+# src/rhoai_obs_mcp/backends/openshift.py
 import logging
 
 from kubernetes import client, config as k8s_config
 
-from rhoai_mcp.auth import AuthProvider
-from rhoai_mcp.config import Settings
+from rhoai_obs_mcp.auth import AuthProvider
+from rhoai_obs_mcp.config import Settings
 
 # Re-export for easy patching in tests
 config = k8s_config

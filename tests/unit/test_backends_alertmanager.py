@@ -1,7 +1,7 @@
 import httpx
 import pytest
 import respx
-from rhoai_mcp.backends.alertmanager import AlertmanagerBackend
+from rhoai_obs_mcp.backends.alertmanager import AlertmanagerBackend
 
 
 SAMPLE_ALERTS = [

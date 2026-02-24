@@ -1,7 +1,7 @@
 # tests/unit/test_tools_cluster.py
 import pytest
 from unittest.mock import MagicMock
-from rhoai_mcp.tools.cluster import register_cluster_tools
+from rhoai_obs_mcp.tools.cluster import register_cluster_tools
 
 
 class TestClusterTools:

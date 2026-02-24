@@ -1,7 +1,7 @@
 # tests/unit/test_tools_alerts.py
 import pytest
 from unittest.mock import AsyncMock
-from rhoai_mcp.tools.alerts import register_alert_tools
+from rhoai_obs_mcp.tools.alerts import register_alert_tools
 
 
 SAMPLE_ALERTS = [

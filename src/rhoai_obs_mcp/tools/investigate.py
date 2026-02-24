@@ -1,9 +1,9 @@
 import asyncio
 
-from rhoai_mcp.backends.alertmanager import AlertmanagerBackend
-from rhoai_mcp.backends.loki import LokiBackend
-from rhoai_mcp.backends.openshift import OpenShiftBackend
-from rhoai_mcp.backends.prometheus import PrometheusBackend
+from rhoai_obs_mcp.backends.alertmanager import AlertmanagerBackend
+from rhoai_obs_mcp.backends.loki import LokiBackend
+from rhoai_obs_mcp.backends.openshift import OpenShiftBackend
+from rhoai_obs_mcp.backends.prometheus import PrometheusBackend
 
 
 def register_investigation_tools(

@@ -2,7 +2,7 @@ import logging
 import subprocess
 from pathlib import Path
 
-from rhoai_mcp.config import Settings
+from rhoai_obs_mcp.config import Settings
 
 logger = logging.getLogger(__name__)
 
