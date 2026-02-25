@@ -1,5 +1,7 @@
 # Red Hat OpenShift AI (RHOAI) Observability MCP
 
+[![CI](https://github.com/amito/rhoai-observability-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/amito/rhoai-observability-mcp/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/amito/rhoai-observability-mcp/branch/main/graph/badge.svg)](https://codecov.io/gh/amito/rhoai-observability-mcp)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
