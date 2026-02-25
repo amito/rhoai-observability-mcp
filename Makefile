@@ -17,7 +17,7 @@ PLATFORM ?= linux/amd64
 # Deploy namespace
 NAMESPACE ?= rhoai-obs-mcp
 
-.PHONY: help build push deploy undeploy clean
+.PHONY: help build push deploy undeploy restart clean
 
 # =============================================================================
 # Help
@@ -50,6 +50,9 @@ deploy: ## Deploy to OpenShift (requires NAMESPACE, default: rhoai-obs-mcp)
 
 undeploy: ## Remove from OpenShift
 	oc delete -f deploy/ --ignore-not-found -n $(NAMESPACE)
+
+restart: ## Rollout restart the deployment (e.g. after pushing a new :latest image)
+	oc rollout restart deployment/rhoai-obs-mcp -n $(NAMESPACE)
 
 # =============================================================================
 # Development
