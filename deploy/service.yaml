@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rhoai-obs-mcp
+  labels:
+    app: rhoai-obs-mcp
+spec:
+  selector:
+    app: rhoai-obs-mcp
+  ports:
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP

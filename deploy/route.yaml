@@ -1,0 +1,14 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: rhoai-obs-mcp
+  labels:
+    app: rhoai-obs-mcp
+spec:
+  to:
+    kind: Service
+    name: rhoai-obs-mcp
+  port:
+    targetPort: 8080
+  tls:
+    termination: edge

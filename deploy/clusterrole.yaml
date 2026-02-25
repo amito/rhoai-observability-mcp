@@ -1,0 +1,13 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: rhoai-obs-mcp
+  labels:
+    app: rhoai-obs-mcp
+rules:
+  - apiGroups: [""]
+    resources: [pods, events, nodes, services]
+    verbs: [get, list]
+  - apiGroups: ["serving.kserve.io"]
+    resources: [inferenceservices]
+    verbs: [get, list]
