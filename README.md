@@ -1,4 +1,4 @@
-# rhoai-observability-mcp
+# Red Hat OpenShift AI (RHOAI) Observability MCP
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
