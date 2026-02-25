@@ -45,11 +45,11 @@ push: ## Push the container image to registry
 # OpenShift
 # =============================================================================
 
-deploy: ## Deploy to OpenShift (current namespace)
-	oc apply -f deploy/
+deploy: ## Deploy to OpenShift (requires NAMESPACE, default: rhoai-obs-mcp)
+	oc apply -f deploy/ -n $(NAMESPACE)
 
 undeploy: ## Remove from OpenShift
-	oc delete -f deploy/ --ignore-not-found
+	oc delete -f deploy/ --ignore-not-found -n $(NAMESPACE)
 
 # =============================================================================
 # Development

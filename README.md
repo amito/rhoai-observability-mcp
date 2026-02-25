@@ -79,18 +79,34 @@ make push
 
 ### Deploy to OpenShift
 
-Prerequisites: `oc login` to your cluster and ensure the target namespace exists.
+Prerequisites: `oc login` to your cluster and create the target project:
+
+```bash
+oc new-project rhoai-obs-mcp
+```
+
+Then deploy:
 
 ```bash
 make deploy
 ```
 
-This applies the manifests in `deploy/` to the current namespace.
+This applies the manifests in `deploy/` to the `rhoai-obs-mcp` namespace. To deploy to a different namespace:
+
+```bash
+make deploy NAMESPACE=my-namespace
+```
 
 ### Undeploy
 
 ```bash
 make undeploy
+```
+
+If you deployed to a custom namespace, pass the same value:
+
+```bash
+make undeploy NAMESPACE=my-namespace
 ```
 
 ### CI-built images
