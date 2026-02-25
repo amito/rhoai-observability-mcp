@@ -1,4 +1,5 @@
 import asyncio
+from typing import Any
 
 from rhoai_obs_mcp.backends.alertmanager import AlertmanagerBackend
 from rhoai_obs_mcp.backends.loki import LokiBackend
@@ -62,14 +63,15 @@ def register_investigation_tools(
 
         # Metrics section
         lines.append("## Metrics (p95)\n")
-        for name, result in [
+        metric_results: list[tuple[str, Any]] = [
             ("TTFT", ttft),
             ("TPOT", tpot),
             ("E2E Latency", e2e),
             ("Queue Depth", queue),
             ("KV Cache Usage", cache),
-        ]:
-            if isinstance(result, Exception):
+        ]
+        for name, result in metric_results:
+            if isinstance(result, BaseException):
                 lines.append(f"- **{name}:** Error fetching ({result})")
             elif result.get("status") == "success" and result["data"].get("result"):
                 value = result["data"]["result"][0]["value"][1]
@@ -79,9 +81,9 @@ def register_investigation_tools(
 
         # Logs section
         lines.append("\n## Recent Error Logs\n")
-        if isinstance(error_logs, Exception):
+        if isinstance(error_logs, BaseException):
             lines.append(f"Error fetching logs: {error_logs}")
-        elif error_logs.get("status") == "success":
+        elif isinstance(error_logs, dict) and error_logs.get("status") == "success":
             results = error_logs["data"].get("result", [])
             if results:
                 for stream in results[:5]:
@@ -94,9 +96,9 @@ def register_investigation_tools(
 
         # Alerts section
         lines.append("\n## Related Alerts\n")
-        if isinstance(alerts, Exception):
+        if isinstance(alerts, BaseException):
             lines.append(f"Error fetching alerts: {alerts}")
-        elif alerts:
+        elif isinstance(alerts, list) and alerts:
             for alert in alerts:
                 name = alert.get("labels", {}).get("alertname", "Unknown")
                 severity = alert.get("labels", {}).get("severity", "unknown")
@@ -133,14 +135,15 @@ def register_investigation_tools(
         lines = ["# GPU Investigation\n"]
 
         lines.append("## GPU Metrics\n")
-        for name, result in [
+        gpu_results: list[tuple[str, Any]] = [
             ("GPU Utilization (%)", gpu_util),
             ("GPU Memory Used (MB)", gpu_mem),
             ("KV Cache Usage", cache),
             ("Requests Running", running),
             ("Requests Waiting", waiting),
-        ]:
-            if isinstance(result, Exception):
+        ]
+        for name, result in gpu_results:
+            if isinstance(result, BaseException):
                 lines.append(f"- **{name}:** Error ({result})")
             elif result.get("status") == "success" and result["data"].get("result"):
                 for r in result["data"]["result"]:
@@ -166,9 +169,9 @@ def register_investigation_tools(
 
         # Alerts
         lines.append("\n## Related Alerts\n")
-        if isinstance(alerts, Exception):
+        if isinstance(alerts, BaseException):
             lines.append(f"Error: {alerts}")
-        elif alerts:
+        elif isinstance(alerts, list) and alerts:
             gpu_alerts = [
                 a
                 for a in alerts
@@ -208,9 +211,9 @@ def register_investigation_tools(
 
         # Error logs
         lines.append("## Error Logs\n")
-        if isinstance(error_logs, Exception):
+        if isinstance(error_logs, BaseException):
             lines.append(f"Error fetching logs: {error_logs}")
-        elif error_logs.get("status") == "success":
+        elif isinstance(error_logs, dict) and error_logs.get("status") == "success":
             results = error_logs["data"].get("result", [])
             if results:
                 for stream in results[:10]:
@@ -225,9 +228,9 @@ def register_investigation_tools(
 
         # Alerts
         lines.append("\n## Active Alerts\n")
-        if isinstance(alerts, Exception):
+        if isinstance(alerts, BaseException):
             lines.append(f"Error: {alerts}")
-        elif alerts:
+        elif isinstance(alerts, list) and alerts:
             for alert in alerts:
                 name = alert.get("labels", {}).get("alertname", "Unknown")
                 severity = alert.get("labels", {}).get("severity", "unknown")
@@ -238,9 +241,9 @@ def register_investigation_tools(
 
         # Events
         lines.append("\n## Kubernetes Events\n")
-        if isinstance(events, Exception):
+        if isinstance(events, BaseException):
             lines.append(f"Error: {events}")
-        elif events:
+        elif isinstance(events, list) and events:
             warning_events = [e for e in events if e.get("type") == "Warning"]
             if warning_events:
                 for event in warning_events[:10]:

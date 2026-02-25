@@ -1,3 +1,5 @@
+from typing import Literal
+
 from rhoai_obs_mcp.backends.loki import LokiBackend
 
 
@@ -27,7 +29,7 @@ def register_log_tools(loki: LokiBackend) -> dict:
 
     async def query_logs(
         logql: str,
-        tenant: str = "application",
+        tenant: Literal["application", "infrastructure", "audit"] = "application",
         time_range: str = "1h",
         limit: int = 100,
     ) -> str:

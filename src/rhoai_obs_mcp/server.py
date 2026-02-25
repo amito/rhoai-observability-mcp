@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 def create_server(settings_override: dict | None = None) -> FastMCP:
     """Create and configure the RHOAI Observability MCP server."""
-    settings = Settings(_env_file=None, **(settings_override or {}))
+    settings = Settings(_env_file=None, **(settings_override or {}))  # type: ignore[call-arg]
 
     logging.basicConfig(level=getattr(logging, settings.log_level))
 

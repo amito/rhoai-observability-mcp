@@ -1,4 +1,5 @@
 import json
+from typing import Any
 
 from rhoai_obs_mcp.backends.openshift import OpenShiftBackend
 
@@ -125,7 +126,7 @@ def register_cluster_tools(openshift: OpenShiftBackend) -> dict:
             meta = svc.get("metadata", {})
             status = svc.get("status", {})
             conditions = status.get("conditions", [])
-            ready = next((c for c in conditions if c.get("type") == "Ready"), {})
+            ready: dict[str, Any] = next((c for c in conditions if c.get("type") == "Ready"), {})
             ready_status = ready.get("status", "Unknown")
             lines.append(
                 f"- **{meta.get('name', 'unknown')}** "
