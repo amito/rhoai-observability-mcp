@@ -57,6 +57,50 @@ python -m rhoai_obs_mcp.server
 
 See [INSTALL.md](INSTALL.md) for detailed setup, configuration, and Claude Desktop integration.
 
+## Build & Deploy
+
+### Build the container image
+
+```bash
+make build
+```
+
+Override the image name or tag:
+
+```bash
+make build IMAGE_NAME=quay.io/myorg/rhoai-observability-mcp IMAGE_TAG=v1.0.0
+```
+
+### Push to registry
+
+```bash
+make push
+```
+
+### Deploy to OpenShift
+
+Prerequisites: `oc login` to your cluster and ensure the target namespace exists.
+
+```bash
+make deploy
+```
+
+This applies the manifests in `deploy/` to the current namespace.
+
+### Undeploy
+
+```bash
+make undeploy
+```
+
+### CI-built images
+
+Container images are automatically built from `main` and published to GHCR:
+
+```
+ghcr.io/amito/rhoai-observability-mcp:latest
+```
+
 ## Tool Reference
 
 ### Metrics
