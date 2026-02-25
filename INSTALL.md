@@ -86,6 +86,8 @@ mcp = create_server(settings_override={
 
 ## Claude Desktop Integration
 
+### Local server
+
 Add the following to your Claude Desktop MCP configuration (`claude_desktop_config.json`):
 
 ```json
@@ -105,7 +107,29 @@ Add the following to your Claude Desktop MCP configuration (`claude_desktop_conf
 }
 ```
 
+### Remote server (deployed on OpenShift)
+
+If the MCP server is [deployed on OpenShift](README.md#deploy-to-openshift), get the route URL and connect to it directly — no local checkout required:
+
+```bash
+oc get route rhoai-obs-mcp -n rhoai-obs-mcp -o jsonpath='https://{.spec.host}'
+```
+
+Then add to `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "rhoai-observability": {
+      "url": "https://rhoai-obs-mcp-rhoai-obs-mcp.apps.mycluster.example.com/sse"
+    }
+  }
+}
+```
+
 ## Claude Code Integration
+
+### Local server
 
 Add to your project's `.mcp.json`:
 
@@ -120,6 +144,26 @@ Add to your project's `.mcp.json`:
         "THANOS_URL": "https://thanos-querier.apps.mycluster.example.com",
         "OPENSHIFT_TOKEN": "sha256~xxxxxxxxxxxxxxxxxxxx"
       }
+    }
+  }
+}
+```
+
+### Remote server (deployed on OpenShift)
+
+Connect to the deployed server via its route URL:
+
+```bash
+claude mcp add rhoai-observability https://rhoai-obs-mcp-rhoai-obs-mcp.apps.mycluster.example.com/sse
+```
+
+Or add to `.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "rhoai-observability": {
+      "url": "https://rhoai-obs-mcp-rhoai-obs-mcp.apps.mycluster.example.com/sse"
     }
   }
 }
