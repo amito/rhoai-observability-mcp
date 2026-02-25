@@ -2,6 +2,14 @@ from typing import Literal
 
 from rhoai_obs_mcp.backends.loki import LokiBackend
 
+_LOKI_UNAVAILABLE_MSG = (
+    "Log queries are not available — Loki is not configured in this cluster.\n\n"
+    "Alternatives:\n"
+    "- Use `get_events` to view Kubernetes events for a namespace\n"
+    "- Use `get_pods` to check pod status and restart counts\n"
+    "- Use `get_pod_logs` via the Kubernetes API if direct pod log access is available"
+)
+
 
 def _format_log_response(data: dict) -> str:
     """Format Loki response into readable text."""
@@ -41,6 +49,8 @@ def register_log_tools(loki: LokiBackend) -> dict:
             time_range: How far back to search (e.g., '1h', '30m')
             limit: Maximum number of log entries to return
         """
+        if not loki.available:
+            return _LOKI_UNAVAILABLE_MSG
         result = await loki.query_range(logql, tenant=tenant, limit=limit)
         return _format_log_response(result)
 
@@ -60,6 +70,8 @@ def register_log_tools(loki: LokiBackend) -> dict:
             time_range: How far back to search
             filter: Text filter to apply (e.g., 'error', 'timeout')
         """
+        if not loki.available:
+            return _LOKI_UNAVAILABLE_MSG
         logql = f'{{kubernetes_namespace_name="{namespace}", kubernetes_pod_name="{pod_name}"}}'
         if container:
             logql = (

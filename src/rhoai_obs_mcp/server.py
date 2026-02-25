@@ -19,6 +19,24 @@ from rhoai_obs_mcp.tools.metrics import register_metrics_tools
 logger = logging.getLogger(__name__)
 
 
+def _log_backend_status(settings: Settings) -> None:
+    """Log the status of each backend at startup."""
+    mode = "in-cluster" if settings.is_in_cluster else "external"
+    logger.info("Running in %s mode", mode)
+
+    backends = [
+        ("Prometheus (Thanos)", settings.thanos_url),
+        ("Alertmanager", settings.alertmanager_url),
+        ("Grafana", settings.grafana_url),
+        ("Loki", settings.loki_url),
+    ]
+    for name, url in backends:
+        if url:
+            logger.info("  %s: %s", name, url)
+        else:
+            logger.info("  %s: disabled (not configured)", name)
+
+
 def create_server(
     settings_override: dict | None = None,
     host: str = "127.0.0.1",
@@ -28,6 +46,7 @@ def create_server(
     settings = Settings(_env_file=None, **(settings_override or {}))  # type: ignore[call-arg]
 
     logging.basicConfig(level=getattr(logging, settings.log_level))
+    _log_backend_status(settings)
 
     auth = AuthProvider(settings)
 

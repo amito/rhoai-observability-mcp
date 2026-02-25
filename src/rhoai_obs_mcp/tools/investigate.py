@@ -83,6 +83,8 @@ def register_investigation_tools(
         lines.append("\n## Recent Error Logs\n")
         if isinstance(error_logs, BaseException):
             lines.append(f"Error fetching logs: {error_logs}")
+        elif isinstance(error_logs, dict) and error_logs.get("status") == "error":
+            lines.append(f"Log query unavailable: {error_logs.get('error', 'Unknown error')}")
         elif isinstance(error_logs, dict) and error_logs.get("status") == "success":
             results = error_logs["data"].get("result", [])
             if results:
@@ -213,6 +215,8 @@ def register_investigation_tools(
         lines.append("## Error Logs\n")
         if isinstance(error_logs, BaseException):
             lines.append(f"Error fetching logs: {error_logs}")
+        elif isinstance(error_logs, dict) and error_logs.get("status") == "error":
+            lines.append(f"Log query unavailable: {error_logs.get('error', 'Unknown error')}")
         elif isinstance(error_logs, dict) and error_logs.get("status") == "success":
             results = error_logs["data"].get("result", [])
             if results:

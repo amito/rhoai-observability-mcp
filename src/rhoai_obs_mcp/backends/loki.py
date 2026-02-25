@@ -11,6 +11,9 @@ logger = logging.getLogger(__name__)
 Tenant = Literal["application", "infrastructure", "audit"]
 
 
+_LOKI_NOT_CONFIGURED = "Loki is not configured. Set LOKI_URL to enable log queries."
+
+
 class LokiBackend:
     """HTTP client for OpenShift LokiStack."""
 
@@ -18,6 +21,12 @@ class LokiBackend:
         self._base_url = settings.loki_url or ""
         self._timeout = settings.request_timeout
         self._auth = auth
+        self._available = settings.loki_enabled
+
+    @property
+    def available(self) -> bool:
+        """Whether Loki is configured and available for queries."""
+        return self._available
 
     def _client(self) -> httpx.AsyncClient:
         return httpx.AsyncClient(
@@ -40,6 +49,9 @@ class LokiBackend:
         direction: str = "backward",
     ) -> dict:
         """Execute a LogQL range query."""
+        if not self._available:
+            return {"status": "error", "error": _LOKI_NOT_CONFIGURED}
+
         params: dict = {"query": logql, "limit": limit, "direction": direction}
         if start:
             params["start"] = start
@@ -57,6 +69,9 @@ class LokiBackend:
 
     async def get_labels(self, tenant: Tenant = "application") -> list[str]:
         """List available labels for a tenant."""
+        if not self._available:
+            return []
+
         try:
             async with self._client() as client:
                 resp = await client.get(f"{self._tenant_path(tenant)}/labels")
