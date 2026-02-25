@@ -19,7 +19,11 @@ from rhoai_obs_mcp.tools.metrics import register_metrics_tools
 logger = logging.getLogger(__name__)
 
 
-def create_server(settings_override: dict | None = None) -> FastMCP:
+def create_server(
+    settings_override: dict | None = None,
+    host: str = "127.0.0.1",
+    port: int = 8000,
+) -> FastMCP:
     """Create and configure the RHOAI Observability MCP server."""
     settings = Settings(_env_file=None, **(settings_override or {}))  # type: ignore[call-arg]
 
@@ -44,6 +48,8 @@ def create_server(settings_override: dict | None = None) -> FastMCP:
             "For complex issues, use the investigate_* tools to correlate data "
             "across multiple sources."
         ),
+        host=host,
+        port=port,
     )
 
     # Register all tools
@@ -61,11 +67,3 @@ def create_server(settings_override: dict | None = None) -> FastMCP:
             mcp.tool(name=name)(func)
 
     return mcp
-
-
-# Module-level server for `mcp run` or direct execution
-app: FastMCP | None = None
-
-if __name__ == "__main__":
-    app = create_server()
-    app.run(transport="stdio")
