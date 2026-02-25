@@ -18,17 +18,14 @@ An MCP (Model Context Protocol) server that gives AI assistants direct access to
 
 ## Architecture
 
-```
-Claude / AI Assistant
-        |
-    MCP Protocol (stdio)
-        |
-  rhoai-observability-mcp
-        |
-  +-----+-----+--------+-----------+
-  |     |     |        |           |
-Thanos  AM   Loki   Grafana   Kubernetes
-(Prom)              (dash)     (OpenShift)
+```mermaid
+graph TD
+    A[Claude / AI Assistant] -->|MCP Protocol| B[rhoai-observability-mcp]
+    B --> C[Thanos / Prometheus]
+    B --> D[Alertmanager]
+    B --> E[Loki]
+    B --> F[Grafana]
+    B --> G[Kubernetes / OpenShift]
 ```
 
 **Backends:**
