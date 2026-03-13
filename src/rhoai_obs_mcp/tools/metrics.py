@@ -1,7 +1,22 @@
 import json
 import re
+import time as time_mod
 
 from rhoai_obs_mcp.backends.prometheus import PrometheusBackend
+
+
+def _relative_to_epoch(val: str) -> str:
+    """Convert a relative duration like '1h' or '30m' to a Unix timestamp.
+
+    Supports s/m/h/d suffixes. If the value doesn't match a known suffix,
+    it is returned unchanged (assumed to be an absolute timestamp or RFC3339).
+    """
+    val = val.strip()
+    units = {"s": 1, "m": 60, "h": 3600, "d": 86400}
+    if val and val[-1].lower() in units and val[:-1].replace(".", "", 1).isdigit():
+        seconds_ago = float(val[:-1]) * units[val[-1].lower()]
+        return str(time_mod.time() - seconds_ago)
+    return val
 
 # Key vLLM metrics with human-readable descriptions
 VLLM_METRICS = {
@@ -66,6 +81,34 @@ def register_metrics_tools(prometheus: PrometheusBackend) -> dict:
 
         return "\n".join(lines)
 
+    async def query_prometheus_range(
+        query: str,
+        start: str = "1h",
+        end: str = "now",
+        step: str = "60s",
+    ) -> str:
+        """Execute a PromQL range query and return time-series data.
+
+        Use this to see how a metric changed over time — for example GPU
+        utilization during a load test, or latency trends over the last hour.
+        Returns timestamped values suitable for identifying spikes, trends,
+        and correlations across metrics.
+
+        Args:
+            query: PromQL expression (e.g., 'DCGM_FI_DEV_GPU_UTIL')
+            start: Start of the range — relative like '1h', '30m', '2d'
+                   or absolute (RFC3339 / Unix timestamp). Default '1h'.
+            end: End of the range — 'now' (default) or same formats as start.
+            step: Query resolution step (e.g., '15s', '60s', '5m'). Default '60s'.
+        """
+        start_ts = _relative_to_epoch(start)
+        end_ts = str(time_mod.time()) if end.strip().lower() == "now" else _relative_to_epoch(end)
+
+        result = await prometheus.query_range(
+            promql=query, start=start_ts, end=end_ts, step=step
+        )
+        return json.dumps(result, indent=2, default=str)
+
     async def list_metrics(filter: str = "") -> str:
         """List available Prometheus metric names, optionally filtered.
 
@@ -90,6 +133,7 @@ def register_metrics_tools(prometheus: PrometheusBackend) -> dict:
 
     return {
         "query_prometheus": query_prometheus,
+        "query_prometheus_range": query_prometheus_range,
         "get_vllm_metrics": get_vllm_metrics,
         "list_metrics": list_metrics,
     }
