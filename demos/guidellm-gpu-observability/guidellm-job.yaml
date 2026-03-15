@@ -1,0 +1,43 @@
+# GuideLLM benchmark job
+# NOTE: Uses "guidellm benchmark run" syntax (v0.5+).
+# Service URL uses "vllm-server" to match the renamed Service.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: guidellm-bench
+  namespace: vllm-demo
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: guidellm
+          image: ghcr.io/vllm-project/guidellm:latest
+          env:
+            - name: GUIDELLM__OPENAI__BASE_URL
+              value: "http://vllm-server.vllm-demo.svc.cluster.local:8000/v1"
+            - name: GUIDELLM__OPENAI__API_KEY
+              value: "not-needed"
+          command:
+            - guidellm
+          args:
+            - benchmark
+            - run
+            - --target=http://vllm-server.vllm-demo.svc.cluster.local:8000/v1
+            - --model=Qwen/Qwen2.5-0.5B-Instruct
+            - --data=prompt_tokens=128,output_tokens=128
+            - --profile=concurrent
+            - --rate=1,2,4
+            - --max-seconds=120
+            - --output-path=/results/benchmark-results.json
+          volumeMounts:
+            - name: results
+              mountPath: /results
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "1"
+      volumes:
+        - name: results
+          emptyDir: {}
