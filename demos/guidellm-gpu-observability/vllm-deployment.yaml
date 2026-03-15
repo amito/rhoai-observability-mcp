@@ -1,0 +1,86 @@
+# vLLM Deployment + Service for GPU observability demo
+# NOTE: Service is named "vllm-server" (not "vllm") to avoid Kubernetes
+# injecting VLLM_PORT/VLLM_SERVICE_HOST env vars that conflict with vLLM's
+# own VLLM_PORT environment variable. This is a known issue with upstream vLLM.
+# Uses upstream image. For RHOAI image (quay.io/modh/vllm:rhoai-2.20-cuda),
+# change the image and mount cache at /root/.cache instead of /tmp/hf-cache.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm
+  namespace: vllm-demo
+  labels:
+    app: vllm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm
+  template:
+    metadata:
+      labels:
+        app: vllm
+    spec:
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:latest
+          command:
+            - python3
+            - -m
+            - vllm.entrypoints.openai.api_server
+          args:
+            - --model=Qwen/Qwen2.5-0.5B-Instruct
+            - --dtype=half
+            - --gpu-memory-utilization=0.9
+            - --max-model-len=4096
+            - --port=8000
+          env:
+            - name: HF_HOME
+              value: /tmp/hf-cache
+            - name: TRANSFORMERS_CACHE
+              value: /tmp/hf-cache
+            - name: XDG_CACHE_HOME
+              value: /tmp/hf-cache
+          ports:
+            - containerPort: 8000
+              protocol: TCP
+          resources:
+            limits:
+              nvidia.com/gpu: "1"
+            requests:
+              nvidia.com/gpu: "1"
+              memory: "8Gi"
+              cpu: "2"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 180
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 90
+            periodSeconds: 10
+          volumeMounts:
+            - name: cache
+              mountPath: /tmp/hf-cache
+      volumes:
+        - name: cache
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vllm-server
+  namespace: vllm-demo
+  labels:
+    app: vllm
+spec:
+  selector:
+    app: vllm
+  ports:
+    - port: 8000
+      targetPort: 8000
+      protocol: TCP
