@@ -10,7 +10,7 @@ An MCP (Model Context Protocol) server that gives AI assistants direct access to
 
 ## Features
 
-- **17 tools** across 6 categories for comprehensive observability
+- **18 tools** across 6 categories for comprehensive observability
 - **vLLM-aware** metrics (TTFT, TPOT, E2E latency, KV cache, queue depth)
 - **Composite investigation** tools that correlate metrics, logs, and alerts automatically
 - **Auto-detection** of in-cluster vs external access to OpenShift services
@@ -124,6 +124,7 @@ ghcr.io/amito/rhoai-observability-mcp:latest
 | Tool | Description |
 |------|-------------|
 | `query_prometheus` | Execute a raw PromQL query against ThanosQuerier |
+| `query_prometheus_range` | Execute a PromQL range query to get time-series data (trends, spikes, correlations) |
 | `get_vllm_metrics` | Get a summary of key vLLM metrics (TTFT, TPOT, E2E, cache, queue) for a model |
 | `list_metrics` | List available Prometheus metric names, optionally filtered by regex |
 
