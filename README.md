@@ -79,7 +79,7 @@ make push
 
 ### Deploy to OpenShift
 
-Prerequisites: `oc login` to your cluster and create the target project:
+Prerequisites: `oc login` to your cluster, `kustomize` installed, and create the target project:
 
 ```bash
 oc new-project rhoai-obs-mcp
@@ -91,7 +91,7 @@ Then deploy:
 make deploy
 ```
 
-This applies the manifests in `deploy/` to the `rhoai-obs-mcp` namespace. To deploy to a different namespace:
+This uses Kustomize to build the OpenShift overlay (`deploy/overlays/openshift/`) on top of the base manifests (`deploy/base/`) and applies them to the `rhoai-obs-mcp` namespace. To deploy to a different namespace:
 
 ```bash
 make deploy NAMESPACE=my-namespace
@@ -115,6 +115,29 @@ Container images are automatically built from `main` and published to GHCR:
 
 ```
 ghcr.io/amito/rhoai-observability-mcp:latest
+```
+
+## Local Development with Kind
+
+Set up a local Kubernetes cluster with mock observability backends for development and testing:
+
+```bash
+# Prerequisites: kind, kubectl, helm, kustomize
+make kind-up
+```
+
+This creates a Kind cluster, installs Prometheus + Alertmanager + Grafana via Helm, deploys a fake vLLM metrics exporter, and deploys the MCP server. Access the MCP server at `http://localhost:30080`.
+
+To point at real external backends instead of the mocks:
+
+```bash
+make kind-deploy THANOS_URL=https://real-cluster:9091 ALERTMANAGER_URL=https://real-cluster:9093 GRAFANA_URL=https://real-cluster:3000
+```
+
+Tear down:
+
+```bash
+make kind-down
 ```
 
 ## Tool Reference

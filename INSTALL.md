@@ -50,6 +50,45 @@ OPENSHIFT_TOKEN=sha256~xxxxxxxxxxxxxxxxxxxx
 LOG_LEVEL=DEBUG
 ```
 
+## Local Development (Kind)
+
+For local development without an OpenShift cluster, use Kind with mock backends:
+
+### Prerequisites
+
+- [Kind](https://kind.sigs.k8s.io/) — local Kubernetes clusters
+- [kubectl](https://kubernetes.io/docs/tasks/tools/) — Kubernetes CLI
+- [Helm](https://helm.sh/) — package manager for Kubernetes
+- [Kustomize](https://kustomize.io/) — Kubernetes manifest customization
+
+### Quick Start
+
+```bash
+make kind-up
+```
+
+This will:
+1. Create a single-node Kind cluster
+2. Install Prometheus, Alertmanager, and Grafana (via kube-prometheus-stack Helm chart)
+3. Deploy a fake vLLM metrics exporter generating synthetic data
+4. Build and deploy the MCP server
+
+The MCP server is accessible at `http://localhost:30080`.
+
+### Using Real Backends
+
+To point the MCP server at real external backends instead of the in-cluster mocks:
+
+```bash
+make kind-deploy THANOS_URL=https://your-cluster:9091 ALERTMANAGER_URL=https://your-cluster:9093 GRAFANA_URL=https://your-cluster:3000
+```
+
+### Cleanup
+
+```bash
+make kind-down
+```
+
 ## Running the Server
 
 ### Direct execution
