@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rhoai-obs-mcp
+spec:
+  template:
+    spec:
+      containers:
+        - name: mcp-server
+          env:
+            - name: MCP_TRANSPORT
+              value: "sse"
+            - name: MCP_HOST
+              value: "0.0.0.0"
+            - name: MCP_PORT
+              value: "8080"
+            - name: LOG_LEVEL
+              value: "DEBUG"
+            - name: THANOS_URL
+              value: "http://kube-prometheus-stack-prometheus.monitoring.svc:9090"
+            - name: ALERTMANAGER_URL
+              value: "http://kube-prometheus-stack-alertmanager.monitoring.svc:9093"
+            - name: GRAFANA_URL
+              value: "http://kube-prometheus-stack-grafana.monitoring.svc:80"

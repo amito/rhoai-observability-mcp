@@ -2,12 +2,6 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: rhoai-obs-mcp
-  labels:
-    app: rhoai-obs-mcp
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: rhoai-obs-mcp
 subjects:
   - kind: ServiceAccount
     name: rhoai-obs-mcp
@@ -17,12 +11,6 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: rhoai-obs-mcp-monitoring
-  labels:
-    app: rhoai-obs-mcp
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: cluster-monitoring-view
 subjects:
   - kind: ServiceAccount
     name: rhoai-obs-mcp
