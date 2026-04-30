@@ -1,8 +1,8 @@
 # Red Hat OpenShift AI (RHOAI) Observability MCP
 
-[![CI](https://github.com/amito/rhoai-observability-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/amito/rhoai-observability-mcp/actions/workflows/ci.yml)
-[![Build](https://github.com/amito/rhoai-observability-mcp/actions/workflows/container-build.yml/badge.svg)](https://github.com/amito/rhoai-observability-mcp/actions/workflows/container-build.yml)
-[![codecov](https://codecov.io/gh/amito/rhoai-observability-mcp/branch/main/graph/badge.svg)](https://codecov.io/gh/amito/rhoai-observability-mcp)
+[![CI](https://github.com/opendatahub-io/rhoai-observability-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/opendatahub-io/rhoai-observability-mcp/actions/workflows/ci.yml)
+[![Build](https://github.com/opendatahub-io/rhoai-observability-mcp/actions/workflows/container-build.yml/badge.svg)](https://github.com/opendatahub-io/rhoai-observability-mcp/actions/workflows/container-build.yml)
+[![codecov](https://codecov.io/gh/opendatahub-io/rhoai-observability-mcp/branch/main/graph/badge.svg)](https://codecov.io/gh/opendatahub-io/rhoai-observability-mcp)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -42,7 +42,7 @@ graph TD
 
 ```bash
 # Clone and install
-git clone https://github.com/amito/rhoai-observability-mcp.git
+git clone https://github.com/opendatahub-io/rhoai-observability-mcp.git
 cd rhoai-observability-mcp
 uv pip install -e ".[dev]"
 
@@ -114,7 +114,7 @@ make undeploy NAMESPACE=my-namespace
 Container images are automatically built from `main` and published to GHCR:
 
 ```
-ghcr.io/amito/rhoai-observability-mcp:latest
+ghcr.io/opendatahub-io/rhoai-observability-mcp:latest
 ```
 
 ## Local Development with Kind
