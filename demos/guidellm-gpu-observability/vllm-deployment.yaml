@@ -84,3 +84,20 @@ spec:
     - port: 8000
       targetPort: 8000
       protocol: TCP
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: vllm-server
+  namespace: vllm-demo
+  labels:
+    app: vllm
+spec:
+  to:
+    kind: Service
+    name: vllm-server
+  port:
+    targetPort: 8000
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
