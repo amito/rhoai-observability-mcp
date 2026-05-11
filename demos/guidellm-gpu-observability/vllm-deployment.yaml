@@ -31,8 +31,10 @@ spec:
           args:
             - --model=Qwen/Qwen2.5-0.5B-Instruct
             - --dtype=half
-            - --gpu-memory-utilization=0.9
-            - --max-model-len=4096
+            - --gpu-memory-utilization=0.4
+            - --max-model-len=32768
+            - --max-num-seqs=128
+            - --enforce-eager
             - --port=8000
           env:
             - name: HF_HOME
@@ -69,6 +71,20 @@ spec:
       volumes:
         - name: cache
           emptyDir: {}
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "vllm-workload"
+          effect: "NoSchedule"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: type
+                operator: In
+                values:
+                - vllm-workload
 ---
 apiVersion: v1
 kind: Service

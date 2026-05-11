@@ -1,0 +1,98 @@
+# Open WebUI — ChatGPT-style interface for the vLLM deployment
+# Provides a browser-based chat UI that talks to vLLM's OpenAI-compatible API.
+# Auth is disabled for demo use. Data is ephemeral (emptyDir-backed SQLite).
+#
+# Default URL points to the plain Deployment service (Option A: vllm-server).
+# For InferenceService (Option B), change vllm-server to vllm-predictor below.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: open-webui
+  namespace: vllm-demo
+  labels:
+    app: open-webui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: open-webui
+  template:
+    metadata:
+      labels:
+        app: open-webui
+    spec:
+      containers:
+        - name: open-webui
+          image: ghcr.io/open-webui/open-webui:main
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          env:
+            - name: OPENAI_API_BASE_URLS
+              value: "http://vllm-predictor.vllm-demo.svc.cluster.local:8000/v1"
+            - name: OPENAI_API_KEYS
+              value: "not-needed"
+            - name: WEBUI_AUTH
+              value: "false"
+            - name: ENABLE_OLLAMA_API
+              value: "false"
+            - name: ENABLE_SIGNUP
+              value: "false"
+          volumeMounts:
+            - name: data
+              mountPath: /app/backend/data
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "1"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 15
+      volumes:
+        - name: data
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: open-webui
+  namespace: vllm-demo
+  labels:
+    app: open-webui
+spec:
+  selector:
+    app: open-webui
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+      protocol: TCP
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: open-webui
+  namespace: vllm-demo
+  labels:
+    app: open-webui
+spec:
+  to:
+    kind: Service
+    name: open-webui
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
