@@ -1,6 +1,7 @@
-# GuideLLM benchmark job
+# GuideLLM benchmark job for InferenceService deployment
 # NOTE: Uses "guidellm benchmark run" syntax (v0.5+).
-# Service URL uses "vllm-server" to match the renamed Service.
+# Service URL uses the KServe predictor service naming pattern:
+#   <isvc-name>-predictor.<namespace>.svc.cluster.local
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -16,7 +17,7 @@ spec:
           image: ghcr.io/vllm-project/guidellm:latest
           env:
             - name: GUIDELLM__OPENAI__BASE_URL
-              value: "http://vllm-server.vllm-demo.svc.cluster.local:8000/v1"
+              value: "http://vllm-predictor.vllm-demo.svc.cluster.local:8000/v1"
             - name: GUIDELLM__OPENAI__API_KEY
               value: "not-needed"
           command:
@@ -24,7 +25,7 @@ spec:
           args:
             - benchmark
             - run
-            - --target=http://vllm-server.vllm-demo.svc.cluster.local:8000/v1
+            - --target=http://vllm-predictor.vllm-demo.svc.cluster.local:8000/v1
             - --model=Qwen/Qwen2.5-0.5B-Instruct
             - --data=prompt_tokens=1024,output_tokens=1024
             - --profile=concurrent

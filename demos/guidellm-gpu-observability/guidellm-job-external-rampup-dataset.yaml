@@ -1,10 +1,12 @@
-# GuideLLM benchmark job
+# GuideLLM benchmark job — runs from an EXTERNAL cluster against the vLLM
+# Route exposed on the target OpenShift cluster.
 # NOTE: Uses "guidellm benchmark run" syntax (v0.5+).
-# Service URL uses "vllm-server" to match the renamed Service.
+# Replace VLLM_ROUTE_HOSTNAME with your actual Route host:
+#   oc get route vllm-server -n vllm-demo -o jsonpath='{.spec.host}'
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: guidellm-bench
+  name: guidellm-bench-rampup
   namespace: vllm-demo
 spec:
   backoffLimit: 0
@@ -15,8 +17,6 @@ spec:
         - name: guidellm
           image: ghcr.io/vllm-project/guidellm:latest
           env:
-            - name: GUIDELLM__OPENAI__BASE_URL
-              value: "http://vllm-server.vllm-demo.svc.cluster.local:8000/v1"
             - name: GUIDELLM__OPENAI__API_KEY
               value: "not-needed"
           command:
@@ -24,12 +24,13 @@ spec:
           args:
             - benchmark
             - run
-            - --target=http://vllm-server.vllm-demo.svc.cluster.local:8000/v1
+            - --target=https://vllm-server-vllm-demo.apps.rosa.amoren-summit.cdsv.p3.openshiftapps.com/v1
             - --model=Qwen/Qwen2.5-0.5B-Instruct
-            - --data=prompt_tokens=1024,output_tokens=1024
-            - --profile=concurrent
-            - --rate=50,50,50
-            - --max-seconds=120
+            - --data=fka/prompts.chat
+            - --profile=constant
+            - --rate=100
+            - --rampup=60
+            - --max-seconds=600
             - --output-dir=/results
             - --outputs=benchmark-results.json
           volumeMounts:

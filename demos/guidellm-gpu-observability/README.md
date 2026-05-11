@@ -11,7 +11,7 @@ The story: **Run load. Ask questions. Get answers with evidence.**
 - `oc` CLI installed (includes built-in Kustomize support)
 - Authenticated with cluster-admin (`oc login`)
 
-No RHOAI, KServe, Service Mesh, or HuggingFace token required. The model (`Qwen/Qwen2.5-0.5B-Instruct`) is publicly available. Everything deploys as plain Kubernetes resources.
+No HuggingFace token required. The model (`Qwen/Qwen2.5-0.5B-Instruct`) is publicly available. The demo offers two deployment paths: a plain Deployment (no RHOAI/KServe dependency) and a KServe InferenceService (requires RHOAI/KServe).
 
 ## Quick Start
 
@@ -56,7 +56,11 @@ data:
 EOF
 ```
 
-Then deploy vLLM and the ServiceMonitor:
+> **Note:** The `deploy-e2e.sh` script handles user workload monitoring enablement automatically, patching the existing config if one exists.
+
+Choose one of the two deployment paths below:
+
+#### Option A: Plain Deployment (no RHOAI/KServe dependency)
 
 ```bash
 oc new-project vllm-demo
@@ -66,7 +70,17 @@ oc apply -f demos/guidellm-gpu-observability/vllm-servicemonitor.yaml
 oc rollout status deployment/vllm -n vllm-demo --timeout=600s
 ```
 
-> **Note:** The `deploy-e2e.sh` script handles user workload monitoring enablement automatically, patching the existing config if one exists.
+#### Option B: KServe InferenceService (requires RHOAI/KServe)
+
+```bash
+oc new-project vllm-demo
+oc adm policy add-scc-to-user anyuid -z default -n vllm-demo
+oc apply -f demos/guidellm-gpu-observability/vllm-inferenceservice.yaml
+oc apply -f demos/guidellm-gpu-observability/vllm-servicemonitor.yaml
+oc wait isvc/vllm --for=condition=Ready --timeout=300s -n vllm-demo
+```
+
+> KServe auto-generates services named `<isvc-name>-predictor`, which avoids the `VLLM_PORT` env collision that the Deployment approach works around with the `vllm-server` Service name.
 
 ### 3. Validate vLLM
 
@@ -96,12 +110,36 @@ oc get route rhoai-obs-mcp -n rhoai-obs-mcp -o jsonpath='https://{.spec.host}/ss
 
 ### 5. Run GuideLLM benchmark
 
+For the plain Deployment (Option A):
+
 ```bash
 oc apply -f demos/guidellm-gpu-observability/guidellm-job.yaml
 oc logs -f job/guidellm-bench -n vllm-demo
 ```
 
-### 6. Connect an MCP client
+For the InferenceService (Option B):
+
+```bash
+oc apply -f demos/guidellm-gpu-observability/guidellm-job-isvc.yaml
+oc logs -f job/guidellm-bench -n vllm-demo
+```
+
+### 6. Deploy Open WebUI (optional)
+
+Deploys a ChatGPT-style web interface for interacting with the Qwen model in a browser:
+
+```bash
+oc apply -f demos/guidellm-gpu-observability/open-webui.yaml
+oc rollout status deployment/open-webui -n vllm-demo --timeout=120s
+echo "Chat UI:"
+oc get route open-webui -n vllm-demo -o jsonpath='https://{.spec.host}'
+```
+
+Open the printed URL in a browser — no login required. The UI auto-discovers the Qwen model from vLLM.
+
+> For InferenceService (Option B), edit `open-webui.yaml` and change `vllm-server` to `vllm-predictor` in `OPENAI_API_BASE_URLS` before applying.
+
+### 7. Connect an MCP client
 
 **Claude Code:**
 
@@ -229,7 +267,7 @@ The NVIDIA DCGM exporter provides these metrics through Thanos:
 
 These were discovered during deployment and are already handled in the manifests:
 
-1. **K8s Service naming conflict**: A Service named `vllm` causes Kubernetes to inject `VLLM_PORT` and `VLLM_SERVICE_HOST` env vars, which collide with vLLM's own `VLLM_PORT` variable (`ValueError: VLLM_PORT appears to be a URI`). The Service is named `vllm-server` to avoid this.
+1. **K8s Service naming conflict** (Option A only): A Service named `vllm` causes Kubernetes to inject `VLLM_PORT` and `VLLM_SERVICE_HOST` env vars, which collide with vLLM's own `VLLM_PORT` variable (`ValueError: VLLM_PORT appears to be a URI`). The Deployment path names the Service `vllm-server` to avoid this. The InferenceService path doesn't have this issue — KServe generates services named `vllm-predictor`.
 
 2. **OpenShift SCC**: The upstream `vllm/vllm-openai` image runs as root. The deploy script grants `anyuid` SCC to the default ServiceAccount in the `vllm-demo` namespace.
 
@@ -243,8 +281,11 @@ These were discovered during deployment and are already handled in the manifests
 |------|---------|
 | `deploy-e2e.sh` | Full deployment, validation, and benchmark script |
 | `teardown.sh` | Clean removal of all resources |
-| `vllm-deployment.yaml` | vLLM Deployment + Service (with gotcha fixes) |
-| `guidellm-job.yaml` | GuideLLM benchmark Job (concurrent profile, 3 rates) |
+| `vllm-deployment.yaml` | vLLM Deployment + Service (Option A) |
+| `vllm-inferenceservice.yaml` | ServingRuntime + InferenceService (Option B) |
+| `guidellm-job.yaml` | GuideLLM benchmark Job for Option A |
+| `guidellm-job-isvc.yaml` | GuideLLM benchmark Job for Option B |
+| `open-webui.yaml` | Chat UI (Deployment + Service + Route) |
 | `monitoring-rbac.yaml` | ClusterRole for Prometheus/Alertmanager API access |
 | `vllm-servicemonitor.yaml` | ServiceMonitor to scrape vLLM metrics into Prometheus |
 
@@ -254,11 +295,24 @@ These were discovered during deployment and are already handled in the manifests
 ./demos/guidellm-gpu-observability/teardown.sh
 ```
 
-Or manually:
+Or manually (Option A — Deployment):
 
 ```bash
 oc delete job/guidellm-bench -n vllm-demo
+oc delete deployment/open-webui service/open-webui route/open-webui -n vllm-demo --ignore-not-found
 oc delete deployment/vllm service/vllm-server -n vllm-demo
+oc delete project vllm-demo
+oc delete -k deploy/overlays/openshift -n rhoai-obs-mcp --ignore-not-found
+oc delete clusterrole rhoai-obs-mcp-monitoring-api
+oc delete project rhoai-obs-mcp
+```
+
+Or manually (Option B — InferenceService):
+
+```bash
+oc delete job/guidellm-bench -n vllm-demo
+oc delete deployment/open-webui service/open-webui route/open-webui -n vllm-demo --ignore-not-found
+oc delete isvc/vllm servingruntime/vllm-runtime -n vllm-demo
 oc delete project vllm-demo
 oc delete -k deploy/overlays/openshift -n rhoai-obs-mcp --ignore-not-found
 oc delete clusterrole rhoai-obs-mcp-monitoring-api
@@ -291,5 +345,5 @@ oc delete project rhoai-obs-mcp
                     +-----v-----+
                     | GPU       |  <--- vLLM (Qwen2.5-0.5B-Instruct)
                     |           |  <--- GuideLLM benchmark
-                    +-----------+
+                    +-----------+  <--- Open WebUI (chat interface)
 ```
